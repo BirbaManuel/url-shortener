@@ -1,0 +1,20 @@
+{
+  "name": "amber-api-url-shortner",
+  "version": "1.0.0",
+  "description": "node app ",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./server/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BirbaManuel/url-shortener"
+  },
+  "author": "Manuel Birba",
+  "license": "ISC",
+  "dependencies": {
+    "connect-flash": "^0.1.1",
+    "express": "^4.0.0"
+  }
+}
