@@ -20,7 +20,7 @@ const urlshort = {
     return data
   },
 }
-console.log(urlshort.short(data))
-console.log(urlshort.enhanced(urlshort.short(data)))
+// console.log(urlshort.short(data))
+// console.log(urlshort.enhanced(urlshort.short(data)))
 
 module.exports = urlshort

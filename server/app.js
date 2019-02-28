@@ -3,13 +3,12 @@ const http = require('http')
 const app = express()
 const config = { port: Number(process.env.PORT || 8000) }
 const log = require('morgan')
+// const mongoose = require('mongoose')
 
 const bodyParser = require('body-parser')
 
 const urlshortener = require('./urlshortener')
-// console.log(
-//   urlshortener.short('https://amber-url-shortner.herokuapp.com/wrongurl')
-// )
+
 const MongoClient = require('mongodb').MongoClient
 const configBDD = require('./config')
 const assert = require('assert') //library
@@ -62,7 +61,7 @@ http.Server(app).listen(config.port, function() {
 
 /*****************************************        Begin ROUTING    *****************************************/
 
-app.use(log('combined'))
+// app.use(log('combined'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -78,33 +77,26 @@ app.get('/showcollection', showcollection)
 const urlencodedParser = bodyParser.urlencoded({ extended: true })
 app.get('/login', urlencodedParser, function(req, res) {
   if (!req.body) return res.sendStatus(400)
-  console.log(req.body, 'login')
+
   // res.send('welcome, ' + req.body)
   res.status(400).json({ welcome: req.body })
 })
 function handleHome(req, res) {
-  console.log(req.body)
   res.status(200).json({ success: 'welcome to Amber-URL-Shortner API!' })
 }
 function handleBadUrl(req, res) {
-  console.log(req.body)
   res.status(400).json({ error: 'Is not a valid url' })
 }
 function shorturl(req, res) {
-  console.log(req.body)
   if (!req.body) {
-    console.log('!req.body')
     res.redirect('/wrongurl')
   }
-  console.log('req.body')
-  console.log(req.body)
   res.status(200).json({
     url: req.body,
     shortURL: 'URL shortener',
   })
 }
 function me(req, res) {
-  console.log(req.body)
   res.status(200).json({
     success: "It's Manuel Birba API",
     date: '26/02/2019',
@@ -112,7 +104,6 @@ function me(req, res) {
   })
 }
 function showcollection(req, res) {
-  console.log(req.body)
   const client = new MongoClient(uri, { useNewUrlParser: true })
   client.connect((err, client) => {
     assert.equal(null, err)
