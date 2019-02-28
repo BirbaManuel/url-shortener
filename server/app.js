@@ -5,6 +5,22 @@ const config = { port: Number(process.env.PORT || 8000) }
 
 const bodyParser = require('body-parser')
 
+// const urlshortener = require('./urlshortener')
+// console.log(urlshortener)
+
+const MongoClient = require('mongodb').MongoClient
+const assert = require('assert')
+// const uri = 'mongodb+srv://kay:myRealPassword@cluster0.mongodb.net/admin'
+const uri =
+  'mongodb+srv://BirMan:<Rei7quie>@mikutanodb-obhnq.mongodb.net/test?retryWrites=true'
+const client = new MongoClient(uri, { useNewUrlParser: true })
+client.connect((err, client) => {
+  assert.equal(null, err)
+  const collection = client.db('ambershortner').collection('personnes')
+  // perform actions on the collection object
+  client.close()
+})
+
 /*****************************************        Begin Start listening    *****************************************/
 http.Server(app).listen(config.port, function() {
   console.log(`API server started at port ${config.port} !!!`)
