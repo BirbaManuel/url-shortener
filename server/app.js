@@ -5,21 +5,24 @@ const config = { port: Number(process.env.PORT || 8000) }
 
 const bodyParser = require('body-parser')
 
-// const urlshortener = require('./urlshortener')
-// console.log(urlshortener)
-
+const urlshortener = require('./urlshortener')
+console.log(
+  urlshortener.short('https://amber-url-shortner.herokuapp.com/wrongurl')
+)
 const MongoClient = require('mongodb').MongoClient
+const configBDD = require('./config')
 const assert = require('assert') //library
 
 /**************************************************************************************/
 //uri to my database in reel projet this information is host in config an external file
-const uri = 'mongodb+srv://BirMan:Rei7quie@mikutanodb-obhnq.mongodb.net/'
+const uri = configBDD.uri
 /**************************************************************************************/
 
 const client = new MongoClient(uri, { useNewUrlParser: true })
 client.connect((err, client) => {
   assert.equal(null, err)
   const collection = client.db('ambershortner').collection('personnes')
+  //perform actions on the collection object
   //Insert 5 last shortner url
   collection.insertMany([
     {
@@ -46,7 +49,6 @@ client.connect((err, client) => {
     },
   ])
 
-  // perform actions on the collection object
   client.close()
 })
 
@@ -64,7 +66,7 @@ app.get('/', handleHome)
 app.get('/wrongurl', handleBadUrl)
 app.get('/me', me)
 app.post('/shorturl', shorturl)
-app.get('/adddocuments', adddocuments)
+app.get('/showcollection', showcollection)
 /*****************************************        End ROUTING    *****************************************/
 
 /*****************************************        Begin Handle ROUTING    *****************************************/
@@ -93,41 +95,51 @@ function me(req, res) {
     goal: 'succed Amber Test',
   })
 }
-function adddocuments(req, res) {
+function showcollection(req, res) {
+  const client = new MongoClient(uri, { useNewUrlParser: true })
   client.connect((err, client) => {
     assert.equal(null, err)
     const collection = client.db('ambershortner').collection('personnes')
+
+    collection.find({}).exec(function(err, data) {
+      if (err) throw err
+      res.json(data)
+    })
+    //doesn't work
+    //collection.drop()
+
     //Insert 5 last shortner url
-    collection.insertMany([
-      {
-        url: 'https://github.com/BirbaManuel/url-shortener',
-        urlshortener: 'https://bit.ly/2TlNJto',
-      },
-      {
-        url:
-          'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
-        urlshortener: 'https://bit.ly/2BTPPac',
-      },
-      {
-        url: 'https://amber-url-shortner.herokuapp.com/wrongurl',
-        urlshortener: 'https://bit.ly/2IPTtb4',
-      },
-      {
-        url: 'https://amber-url-shortner.herokuapp.com/',
-        urlshortener: 'https://bit.ly/2GO6yQ3',
-      },
-      {
-        url:
-          'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
-        urlshortener: 'https://bit.ly/2IPTUCe',
-      },
-    ])
+    // collection.insertMany([
+    //   {
+    //     url: 'https://github.com/BirbaManuel/url-shortener',
+    //     urlshortener: 'https://bit.ly/2TlNJto',
+    //   },
+    //   {
+    //     url:
+    //       'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
+    //     urlshortener: 'https://bit.ly/2BTPPac',
+    //   },
+    //   {
+    //     url: 'https://amber-url-shortner.herokuapp.com/wrongurl',
+    //     urlshortener: 'https://bit.ly/2IPTtb4',
+    //   },
+    //   {
+    //     url: 'https://amber-url-shortner.herokuapp.com/',
+    //     urlshortener: 'https://bit.ly/2GO6yQ3',
+    //   },
+    //   {
+    //     url:
+    //       'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
+    //     urlshortener: 'https://bit.ly/2IPTUCe',
+    //   },
+    // ])
 
     // perform actions on the collection object
     client.close()
   })
-  res.status(200).json({
-    success: '5 last shortner URL insered in Database !!!',
-  })
+  // res.status(200).json({
+  //   success: '5 last shortner URL insered in Database !!!',
+  // })
+  console.log('try show db')
 }
 /*****************************************        End Handle ROUTING    *****************************************/
