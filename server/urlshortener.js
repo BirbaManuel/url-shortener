@@ -13,6 +13,8 @@ const urlshort = {
   enhanced: function(url) {
     if (url === '46aaab2081983c4553980869b98d6dd0')
       return 'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/'
+
+    //To do : stuff to query database and find shorted url according to the enhanced one
     // let code = crypto
     //   .createHash('md5')
     //   .update(data)
