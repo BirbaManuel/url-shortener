@@ -5,36 +5,36 @@ const config = { port: Number(process.env.PORT || 8000) }
 const logger = require('morgan') // add log
 const chalk = require('chalk') // add some cool color to your log
 
-//Edit data format to insert in database
-const mongoose = require('mongoose')
-const Url = require('./models/url')
+const mongoose = require('mongoose') //Edit data format to insert in database
 
 const bodyParser = require('body-parser')
-
-const urlshortener = require('./urlshortener')
-const googleCom = 'www.google.com'
-var newURL = new Url({
-  short: googleCom,
-  enhanced: urlshortener.short(googleCom),
-})
-
-console.log(newURL)
+const assert = require('assert') //library to do unit test
 
 const MongoClient = require('mongodb').MongoClient
 const configBDD = require('./config')
-const assert = require('assert') //library to do unit test
+const Url = require('./models/url') //format url data before insert to bdd
 
 /**************************************************************************************/
 //uri to my database in reel projet this information is host in config an external file
 const uri = configBDD.uri
 /**************************************************************************************/
 
-const client = new MongoClient(uri, { useNewUrlParser: true })
-client.connect((err, client) => {
-  assert.equal(null, err)
-  const collection = client.db('ambershortner').collection('encodeurl')
-  client.close()
+const urlshortener = require('./urlshortener') //my custom hash object
+
+const googleCom = 'www.google.com'
+var newURL = new Url({
+  short: googleCom,
+  enhanced: urlshortener.short(googleCom),
 })
+console.log(newURL)
+
+// const client = new MongoClient(uri, { useNewUrlParser: true })
+// client.connect((err, client) => {
+//   assert.equal(null, err)
+//   const collection = client.db('ambershortner').collection('encodeurl')
+//   client.close()
+// })
+mongoose.connect(uri)
 
 /*****************************************        Begin Start listening    *****************************************/
 http.Server(app).listen(config.port, function() {
