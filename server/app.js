@@ -9,14 +9,38 @@ const bodyParser = require('body-parser')
 // console.log(urlshortener)
 
 const MongoClient = require('mongodb').MongoClient
-const assert = require('assert')
-// const uri = 'mongodb+srv://kay:myRealPassword@cluster0.mongodb.net/admin'
-const uri =
-  'mongodb+srv://BirMan:<Rei7quie>@mikutanodb-obhnq.mongodb.net/test?retryWrites=true'
+const assert = require('assert') //librairy
+const uri = 'mongodb+srv://BirMan:Rei7quie@mikutanodb-obhnq.mongodb.net/' //uri to my database
 const client = new MongoClient(uri, { useNewUrlParser: true })
 client.connect((err, client) => {
   assert.equal(null, err)
   const collection = client.db('ambershortner').collection('personnes')
+  //Insert 5 last shortner url
+  collection.insertMany([
+    {
+      url: 'https://github.com/BirbaManuel/url-shortener',
+      urlshortener: 'https://bit.ly/2TlNJto',
+    },
+    {
+      url:
+        'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
+      urlshortener: 'https://bit.ly/2BTPPac',
+    },
+    {
+      url: 'https://amber-url-shortner.herokuapp.com/wrongurl',
+      urlshortener: 'https://bit.ly/2IPTtb4',
+    },
+    {
+      url: 'https://amber-url-shortner.herokuapp.com/',
+      urlshortener: 'https://bit.ly/2GO6yQ3',
+    },
+    {
+      url:
+        'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
+      urlshortener: 'https://bit.ly/2IPTUCe',
+    },
+  ])
+
   // perform actions on the collection object
   client.close()
 })
