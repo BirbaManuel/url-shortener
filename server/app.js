@@ -21,21 +21,45 @@ const uri = configBDD.uri
 
 const urlshortener = require('./urlshortener') //my custom hash object
 
-const googleCom = 'www.google.com'
-var newURL = new Url({
-  short: googleCom,
-  enhanced: urlshortener.short(googleCom),
-})
-console.log(newURL)
+const originalUrl = [
+  'https://github.com/BirbaManuel/url-shortener',
+  'https://amber-url-shortner.herokuapp.com/',
+  'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
+  'https://amber-url-shortner.herokuapp.com/wrongurl',
+  'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
+  'https://mongoosejs.com/docs/connections.html',
+]
+function saveUrlRequest(paramsUrl) {
+  const newURL = new Url({
+    short: paramsUrl,
+    enhanced: urlshortener.short(paramsUrl),
+  })
 
-// const client = new MongoClient(uri, { useNewUrlParser: true })
-// client.connect((err, client) => {
-//   assert.equal(null, err)
-//   const collection = client.db('ambershortner').collection('encodeurl')
-//   client.close()
+  newURL.save(function(err) {
+    if (err) throw err
+    console.log('new short URL save in database!')
+  })
+}
+saveUrlRequest(originalUrl[5])
+// const newURL = new Url({
+//   short: originalUrl[4],
+//   enhanced: urlshortener.short(originalUrl[4]),
 // })
-mongoose.connect(uri)
+const options = {
+  useNewUrlParser: false,
+  useCreateIndex: true,
+  //... Please see https://mongoosejs.com/docs/connections.html
+}
 
+//try to connect to database
+mongoose.connect(uri, options).then(
+  () => {
+    console.log('connected')
+  },
+  err => {
+    console.log(err)
+  }
+)
 /*****************************************        Begin Start listening    *****************************************/
 http.Server(app).listen(config.port, function() {
   console.log(
@@ -112,15 +136,22 @@ async function shorturl(req, res) {
 
 //show url store in database
 function showcollection(req, res) {
-  const client = new MongoClient(uri, { useNewUrlParser: true })
-  client.connect((err, client) => {
-    assert.equal(null, err)
-    const collection = client.db('ambershortner').collection('encodeurl')
-    collection.find({}).exec(function(err, data) {
-      if (err) throw err
-      res.json(data)
-    })
-    client.close()
+  // const client = new MongoClient(uri, { useNewUrlParser: true })
+  // client.connect((err, client) => {
+  //   assert.equal(null, err)
+  //   const collection = client.db('ambershortner').collection('encodeurl')
+  //   collection.find({}).exec(function(err, data) {
+  //     if (err) throw err
+  //     res.json(data)
+  //   })
+  //   client.close()
+  // })
+  Url.find({}, function(err, users) {
+    if (err) throw err
+
+    // object of all the users
+    console.log(users)
+    res.status(200).json(users)
   })
   console.log('try show db')
 }
