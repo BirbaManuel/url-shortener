@@ -2,7 +2,8 @@ const express = require('express')
 const http = require('http')
 const app = express()
 const config = { port: Number(process.env.PORT || 8000) }
-const log = require('morgan')
+const logger = require('morgan')
+const chalk = 'chalk'
 // const mongoose = require('mongoose')
 
 const bodyParser = require('body-parser')
@@ -61,7 +62,7 @@ http.Server(app).listen(config.port, function() {
 
 /*****************************************        Begin ROUTING    *****************************************/
 
-// app.use(log('combined'))
+// app.use(logger('combined'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -70,22 +71,22 @@ app.get('/wrongurl', handleBadUrl)
 app.get('/me', me)
 app.post('/shorturl', shorturl)
 app.get('/showcollection', showcollection)
+app.post('/login', handleLogin)
 /*****************************************        End ROUTING    *****************************************/
 
 /*****************************************        Begin Handle ROUTING    *****************************************/
 // create application/x-www-form-urlencoded parser
 const urlencodedParser = bodyParser.urlencoded({ extended: true })
-app.get('/login', urlencodedParser, function(req, res) {
+function handleLogin(req, res) {
   if (!req.body) return res.sendStatus(400)
 
-  // res.send('welcome, ' + req.body)
-  res.status(400).json({ welcome: req.body })
-})
+  res.status(200).json({ welcome: req.body }) //http code 200 => succes !!!
+}
 function handleHome(req, res) {
   res.status(200).json({ success: 'welcome to Amber-URL-Shortner API!' })
 }
 function handleBadUrl(req, res) {
-  res.status(400).json({ error: 'Is not a valid url' })
+  res.status(400).json({ error: 'Is not a valid url' }) //http code 400 => bad parameter
 }
 function shorturl(req, res) {
   if (!req.body) {
