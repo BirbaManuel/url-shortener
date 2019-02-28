@@ -18,6 +18,8 @@ var newURL = new Url({
   enhanced: urlshortener.short(googleCom),
 })
 
+console.log(newURL)
+
 const MongoClient = require('mongodb').MongoClient
 const configBDD = require('./config')
 const assert = require('assert') //library to do unit test
@@ -30,35 +32,7 @@ const uri = configBDD.uri
 const client = new MongoClient(uri, { useNewUrlParser: true })
 client.connect((err, client) => {
   assert.equal(null, err)
-  const collection = client.db('ambershortner').collection('personnes')
-  //collection.drop()
-  //perform actions on the collection object
-  //Insert 5 last shortner url
-  // collection.insertMany([
-  //   {
-  //     url: 'https://github.com/BirbaManuel/url-shortener',
-  //     urlshortener: 'https://bit.ly/2TlNJto',
-  //   },
-  //   {
-  //     url:
-  //       'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
-  //     urlshortener: 'https://bit.ly/2BTPPac',
-  //   },
-  //   {
-  //     url: 'https://amber-url-shortner.herokuapp.com/wrongurl',
-  //     urlshortener: 'https://bit.ly/2IPTtb4',
-  //   },
-  //   {
-  //     url: 'https://amber-url-shortner.herokuapp.com/',
-  //     urlshortener: 'https://bit.ly/2GO6yQ3',
-  //   },
-  //   {
-  //     url:
-  //       'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
-  //     urlshortener: 'https://bit.ly/2IPTUCe',
-  //   },
-  // ])
-
+  const collection = client.db('ambershortner').collection('encodeurl')
   client.close()
 })
 
@@ -121,11 +95,7 @@ async function shorturl(req, res) {
   }
   try {
     console.log(req.query)
-    const task = await Promise.all([
-      EtakeTime(10),
-      EtakeTime(20),
-      EtakeTime(30),
-    ])
+    const task = await Promise.all([takeTime(10), takeTime(20), takeTime(30)])
     //handle 'url' property
     const resulat = `http://localhost:8000/${urlshortener.short(req.body.url)}`
     console.log(resulat)
@@ -140,61 +110,27 @@ async function shorturl(req, res) {
   }
 }
 
-//get some info from me
+//show url store in database
+function showcollection(req, res) {
+  const client = new MongoClient(uri, { useNewUrlParser: true })
+  client.connect((err, client) => {
+    assert.equal(null, err)
+    const collection = client.db('ambershortner').collection('encodeurl')
+    collection.find({}).exec(function(err, data) {
+      if (err) throw err
+      res.json(data)
+    })
+    client.close()
+  })
+  console.log('try show db')
+}
+
+//get some info from me 😃
 function me(req, res) {
   res.status(200).json({
     success: "It's Manuel Birba API",
     date: '26/02/2019',
     goal: 'succed Amber Test',
   })
-}
-
-//show url store in database
-function showcollection(req, res) {
-  const client = new MongoClient(uri, { useNewUrlParser: true })
-  client.connect((err, client) => {
-    assert.equal(null, err)
-    const collection = client.db('ambershortner').collection('personnes')
-
-    collection.find({}).exec(function(err, data) {
-      if (err) throw err
-      res.json(data)
-    })
-    //doesn't work
-    //collection.drop()
-
-    //Insert 5 last shortner url
-    // collection.insertMany([
-    //   {
-    //     url: 'https://github.com/BirbaManuel/url-shortener',
-    //     urlshortener: 'https://bit.ly/2TlNJto',
-    //   },
-    //   {
-    //     url:
-    //       'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
-    //     urlshortener: 'https://bit.ly/2BTPPac',
-    //   },
-    //   {
-    //     url: 'https://amber-url-shortner.herokuapp.com/wrongurl',
-    //     urlshortener: 'https://bit.ly/2IPTtb4',
-    //   },
-    //   {
-    //     url: 'https://amber-url-shortner.herokuapp.com/',
-    //     urlshortener: 'https://bit.ly/2GO6yQ3',
-    //   },
-    //   {
-    //     url:
-    //       'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
-    //     urlshortener: 'https://bit.ly/2IPTUCe',
-    //   },
-    // ])
-
-    // perform actions on the collection object
-    client.close()
-  })
-  // res.status(200).json({
-  //   success: '5 last shortner URL insered in Database !!!',
-  // })
-  console.log('try show db')
 }
 /*****************************************        End Handle ROUTING    *****************************************/
