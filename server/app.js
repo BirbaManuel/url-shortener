@@ -9,6 +9,7 @@ const mongoose = require('mongoose') //Edit data format to insert in database
 
 const bodyParser = require('body-parser')
 const assert = require('assert') //library to do unit test
+const flash = require('connect-flash') //middleware connect-flash : messages temporaires
 
 const MongoClient = require('mongodb').MongoClient
 const configBDD = require('./config')
@@ -19,16 +20,8 @@ const Url = require('./models/url') //format url data before insert to bdd
 const uri = configBDD.uri
 /**************************************************************************************/
 
-const urlshortener = require('./urlshortener') //my custom hash object
+const urlshortener = require('./urlshortener') //my custom object to hash string
 
-const originalUrl = [
-  'https://github.com/BirbaManuel/url-shortener',
-  'https://amber-url-shortner.herokuapp.com/',
-  'https://gist.github.com/BirbaManuel/ad443b0e5744b3e0015133234e12835c',
-  'https://amber-url-shortner.herokuapp.com/wrongurl',
-  'https://5c7589b20ebb4b7b60ffbeb2--serene-aryabhata-8aefe1.netlify.com/',
-  'https://mongoosejs.com/docs/connections.html',
-]
 function saveUrlRequest(paramsUrl) {
   const newURL = new Url({
     short: paramsUrl,
@@ -40,15 +33,12 @@ function saveUrlRequest(paramsUrl) {
     console.log('new short URL save in database!')
   })
 }
-saveUrlRequest(originalUrl[5])
-// const newURL = new Url({
-//   short: originalUrl[4],
-//   enhanced: urlshortener.short(originalUrl[4]),
-// })
+// exemple test to save a original URL => saveUrlRequest(originalUrl[5])
+
 const options = {
   useNewUrlParser: false,
   useCreateIndex: true,
-  //... Please see https://mongoosejs.com/docs/connections.html
+  //... Please see https://mongoosejs.com/docs/connections.html to give more specific option
 }
 
 //try to connect to database
@@ -79,7 +69,8 @@ app.get('/wrongurl', handleBadUrl)
 app.get('/me', me)
 app.post('/shorturl', shorturl)
 // app.get('/:', reverseShorturl)
-app.get('/showcollection', showcollection)
+app.get('/showAllcollection', showAllcollection)
+app.get('/redirecttooriginalurl', redirectToOriginalUrl)
 app.post('/login', handleLogin)
 /*****************************************        End ROUTING    *****************************************/
 
@@ -134,28 +125,30 @@ async function shorturl(req, res) {
   }
 }
 
-//show url store in database
-function showcollection(req, res) {
-  // const client = new MongoClient(uri, { useNewUrlParser: true })
-  // client.connect((err, client) => {
-  //   assert.equal(null, err)
-  //   const collection = client.db('ambershortner').collection('encodeurl')
-  //   collection.find({}).exec(function(err, data) {
-  //     if (err) throw err
-  //     res.json(data)
-  //   })
-  //   client.close()
-  // })
-  Url.find({}, function(err, users) {
+//show all url store in database
+function showAllcollection(req, res) {
+  Url.find({}, function(err, url) {
     if (err) throw err
-
-    // object of all the users
-    console.log(users)
-    res.status(200).json(users)
+    // object of all the url
+    console.log(url)
+    res.status(200).json(url)
   })
   console.log('try show db')
 }
 
+//show all url store in database
+function verifyIfURLAlreadyShorted(pUrl) {
+  //set shorted format (URL to URN)
+  const urn = pUrl
+  Url.find({ enhanced: urn }, function(err, url) {
+    if (err) throw err
+    console.log(url)
+    res.redirect('/redirecttooriginalurl')
+  })
+}
+verifyIfURLAlreadyShorted('46aaab2081983c4553980869b98d6dd0')
+
+function redirectToOriginalUrl(params) {}
 //get some info from me 😃
 function me(req, res) {
   res.status(200).json({
